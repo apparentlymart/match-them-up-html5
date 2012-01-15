@@ -1,0 +1,79 @@
+
+/*
+Yellow: #ffe401
+Dark Purple: #7d1356
+Light Purple: #aa1c76
+*/
+
+@font-face {
+    font-family: "Droid Sans";
+    font-weight: normal;
+    font-style: normal;
+    src: local("Droid Sans"), local("DroidSans"), url("droidsans.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Droid Sans";
+    font-weight: bold;
+    font-style: normal;
+    src: local("Droid Sans Bold"), local("DroidSans-Bold"), url("droidsansbd.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Concert One";
+    font-weight: normal;
+    font-style: normal;
+    src: local("Concert One"), url("concertone.ttf") format("truetype");
+}
+
+
+body {
+    background: #7d1356;
+    font-family: "Droid Sans";
+    font-size: 12px;
+}
+
+#game {
+    width: 640px;
+    margin: auto;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.box {
+    overflow: hidden;
+    width: 52px;
+    height: 62px;
+    background: #000000;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    position: relative;
+    color: #ffffff;
+    background-position: -1px -1px;
+    margin: 5px;
+    float: left;
+}
+
+.box .door {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #aa1c76;
+    color: #ffffff;
+    font-size: 50px;
+    font-family: "Concert One";
+    text-align: center;
+    width: 52px;
+    height: 62px;
+}
+.doorcaption {
+    -webkit-transform-origin: 50% 50%;
+    -transform-origin: 50% 50%;
+}
+
+#title {
+    font-family: "Concert One";
+    font-size: 48px;
+    color: #ffe401;
+}
