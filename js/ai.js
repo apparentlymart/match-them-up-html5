@@ -9,6 +9,7 @@ function AIPlayer(name, ui, memCoefficient) {
     $cursor.css("display", "none");
     $("#game").append($cursor);
     var clickedCount = 0;
+    var aiCheats = false;
 
     for (var i = 0; i < 60; i++) {
         player.memory[i] = {};
@@ -16,6 +17,15 @@ function AIPlayer(name, ui, memCoefficient) {
 
     player.requestMove = function (game, callback) {
         var move = null;
+
+        if (aiCheats) {
+            for (var boxidx = 0; boxidx < 60; boxidx++) {
+                var box = game.boxes[boxidx];
+                var tileidx = box.tile;
+                if (! player.memory[tileidx]) player.memory[tileidx] = {};
+                player.memory[tileidx][boxidx] = 2000;
+            }
+        }
 
         if (game.openBoxes.length == 0) {
             // First move of the turn.
