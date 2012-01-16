@@ -3,7 +3,7 @@ function MatchEmGame(players, ui) {
     var game = {};
 
     game.players = players;
-    game.currentPlayer = 0;
+    game.currentPlayer = -1;
     game.openBoxes = [];
     game.numBoxesInPlay = 60;
 
@@ -31,7 +31,9 @@ function MatchEmGame(players, ui) {
             game.currentPlayer = 0;
         }
         ui.updatePlayerMarker();
-        game.nextMove();
+        ui.announceNewPlayer(function () {
+            game.nextMove();
+        });
     };
     game.nextMove = function () {
         game.players[game.currentPlayer].requestMove(handleMove);
@@ -88,7 +90,9 @@ function MatchEmGame(players, ui) {
                     game.numBoxesInPlay -= 2;
 
                     if (game.numBoxesInPlay > 0) {
-                        game.nextMove();
+                        ui.announceMatch(tile1, function () {
+                            game.nextMove();
+                        });
                     }
                     else {
                         // Game over!
@@ -115,10 +119,9 @@ function MatchEmGame(players, ui) {
     };
 
     ui.init(game);
-    ui.updatePlayerMarker();
 
     // Begin the game by starting a turn.
-    game.nextMove();
+    game.nextPlayer();
 
     return game;
 }

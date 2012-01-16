@@ -5,6 +5,17 @@
     var $players;
     var game;
     var moveCallback = null;
+    var inARow = 0;
+    var specialMatchMessages = {
+        0: "That's a Big 2 for you, #!",
+        1: "Hey, hey, hey! Three points for #!",
+        2: "Four points for you, #!",
+    };
+    var matchMessages = [
+        "Nice job, #! Can you find another pair?",
+        "Keep it up, #!",
+        "You're on a roll, #!",
+    ];
 
     $(document).ready(function() {
         var $boxcontainer = $("#boxes");
@@ -66,8 +77,36 @@
                     $player.find(".score").text(""+score);
                 }
             },
+            announceNewPlayer: function (complete) {
+                var playerName = game.players[game.currentPlayer].name;
+                var playerType = game.players[game.currentPlayer].type;
+                inARow = 0; // reset counter
+                // If it's a UI (human) player then we address the
+                // player. Otherwise, we talk about the player in the
+                // third person.
+                if (playerType == "ui") {
+                    slideMessageLeft("Your turn, " + playerName + "...", complete);
+                }
+                else {
+                    slideMessageLeft("Now for " + playerName + "...", complete);
+                }
+            },
+            announceMatch: function (tileidx, complete) {
+                var playerName = game.players[game.currentPlayer].name;
+                var message;
+                if (specialMatchMessages[tileidx]) {
+                    message = specialMatchMessages[tileidx];
+                }
+                else {
+                    message = matchMessages[inARow % matchMessages.length];
+                }
+                inARow++; // keep track for next time
+                message = message.replace("#", playerName);
+                slideMessageUp(message, complete);
+            },
             endOfGame: function (winners) {
-                console.log("End of game! Winners: ", winners);
+                // TODO: Real message for this state
+                slideMessageLeft("End of game! Winners: " + winners);
             },
         };
         players = [];
@@ -77,6 +116,7 @@
                     moveCallback = callback;
                 },
                 "name": "Player " + (i + 1),
+                "type": "ui",
             });
         }
 
@@ -93,8 +133,10 @@
             }
         });
 
-        // Start the game
-        MatchEmGame(players, ui);
+        // Start the game after waiting a second for the UI to settle.
+        setTimeout(function () {
+            MatchEmGame(players, ui);
+        }, 1000);
 
     });
 
@@ -140,6 +182,53 @@
                 $captions.css("-webkit-transform", str);
             },
             "complete": complete,
+        });
+    }
+
+    function slideMessageUp(msg, complete) {
+        var $ticker = $("#ticker");
+        var $tickerslide = $("#tickerslide");
+        var $existing = $("#tickerslide div");
+        var $new = $("<div></div>");
+        $new.text(msg);
+        $tickerslide.append($new);
+
+        var realComplete = function () {
+            $existing.remove();
+            $ticker.scrollTop(0);
+            if (complete) complete();
+        };
+
+        $ticker.animate({
+            "scrollTop": 50,
+        },
+        {
+            complete: realComplete,
+        });
+    }
+
+    function slideMessageLeft(msg, complete) {
+        var $ticker = $("#ticker");
+        var $tickerslide = $("#tickerslide");
+        var $existing = $("#tickerslide div");
+        var $new = $("<div></div>");
+        $new.text(msg);
+        $tickerslide.append($new);
+        $existing.css("float", "left");
+        $new.css("float", "left");
+
+        var realComplete = function () {
+            $existing.remove();
+            $new.css("float", "");
+            $ticker.scrollLeft(0);
+            if (complete) complete();
+        };
+
+        $ticker.animate({
+            "scrollLeft": 628,
+        },
+        {
+            complete: realComplete,
         });
     }
 
