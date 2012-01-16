@@ -126,6 +126,18 @@
                     slideMessageLeft("It's a draw!");
                 }
             },
+            getBoxBoundingBox: function (idx) {
+                var $box = $boxes[idx];
+                var pos = $box.position();
+                var width = $box.width();
+                var height = $box.height();
+                return {
+                    top: pos.top,
+                    left: pos.left,
+                    width: width,
+                    height: height,
+                };
+            },
         };
 
     };

@@ -165,3 +165,13 @@ body {
 #setuppanel p {
     text-align: center;
 }
+
+.aicursor {
+    width: 32px;
+    height: 32px;
+    background: url(aicursor.svg);
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+}
