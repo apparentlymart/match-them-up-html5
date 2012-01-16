@@ -59,6 +59,16 @@
                     $player.find(".marker").html(marker);
                 }
             },
+            updateScores: function () {
+                for (var i = 0; i < game.players.length; i++) {
+                    var $player = $players[i];
+                    var score = game.players[i].score;
+                    $player.find(".score").text(""+score);
+                }
+            },
+            endOfGame: function (winners) {
+                console.log("End of game! Winners: ", winners);
+            },
         };
         players = [];
         for (var i = 0; i < 4; i++) {

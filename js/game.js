@@ -5,6 +5,7 @@ function MatchEmGame(players, ui) {
     game.players = players;
     game.currentPlayer = 0;
     game.openBoxes = [];
+    game.numBoxesInPlay = 60;
 
     for (var i = 0; i < players.length; i++) {
         players[i].score = 0;
@@ -49,22 +50,62 @@ function MatchEmGame(players, ui) {
             box.open = true;
 
             if (game.openBoxes.length == 2) {
-                var closeComplete = function () {
-                    // this doesn't necessarily pop them in the
-                    // correct order but that's okay since we only
-                    // want to keep track of the count.
-                    game.openBoxes.pop();
-                    if (game.openBoxes.length == 0) {
-                        game.nextPlayer();
+                // Determine if the player found a match.
+                var tile1 = game.boxes[game.openBoxes[0]].tile;
+                var tile2 = game.boxes[game.openBoxes[1]].tile;
+                if (tile1 != tile2) {
+                    // No match. Close the boxes.
+                    var closeComplete = function () {
+                        // this doesn't necessarily pop them in the
+                        // correct order but that's okay since we only
+                        // want to keep track of the count.
+                        game.openBoxes.pop();
+                        if (game.openBoxes.length == 0) {
+                            game.nextPlayer();
+                        }
+                    };
+                    setTimeout(function () {
+                        for (var i = 0; i < game.openBoxes.length; i++) {
+                            var idx = game.openBoxes[i];
+                            game.boxes[idx].open = false;
+                            ui.closeBox(idx, closeComplete);
+                        }
+                    }, 1000);
+                }
+                else {
+                    // Found a match! Player get at least one point
+                    // and another turn.
+
+                    var points = 1;
+                    // Tiles 0, 1 and 2 grant extra points
+                    if (tile1 < 3) {
+                        points = points + tile1 + 1;
                     }
-                };
-                setTimeout(function () {
-                    for (var i = 0; i < game.openBoxes.length; i++) {
-                        var idx = game.openBoxes[i];
-                        game.boxes[idx].open = false;
-                        ui.closeBox(idx, closeComplete);
+                    game.players[game.currentPlayer].score += points;
+                    ui.updateScores();
+                    // Take the new match out of play.
+                    game.openBoxes = [];
+                    game.numBoxesInPlay -= 2;
+
+                    if (game.numBoxesInPlay > 0) {
+                        game.nextMove();
                     }
-                }, 1000);
+                    else {
+                        // Game over!
+                        var winners = [ 0 ];
+                        for (var i = 1; i < game.players.length; i++) {
+                            var scoreToBeat = game.players[winners[0]].score;
+                            var actualScore = game.players[i].score;
+                            if (actualScore > scoreToBeat) {
+                                winners = [ i ];
+                            }
+                            else if (actualScore == scoreToBeat) {
+                                winners.push(i);
+                            }
+                        }
+                        ui.endOfGame(winners);
+                    }
+                }
             }
             else {
                 game.nextMove();
