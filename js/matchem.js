@@ -105,8 +105,13 @@
                 slideMessageUp(message, complete);
             },
             endOfGame: function (winners) {
-                // TODO: Real message for this state
-                slideMessageLeft("End of game! Winners: " + winners);
+                if (winners.length == 1) {
+                    var playerName = game.players[winners[0]].name;
+                    slideMessageLeft(playerName + " wins!");
+                }
+                else {
+                    slideMessageLeft("It's a draw!");
+                }
             },
         };
         players = [];
