@@ -36,7 +36,7 @@ function MatchEmGame(players, ui) {
         });
     };
     game.nextMove = function () {
-        game.players[game.currentPlayer].requestMove(handleMove);
+        game.players[game.currentPlayer].requestMove(game, handleMove);
     }
 
     handleMove = function (idx) {

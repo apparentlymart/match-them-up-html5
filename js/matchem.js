@@ -203,7 +203,7 @@
                 var wanted = wantedPlayers[i];
                 if (wanted[0] == "ui") {
                     players.push({
-                        "requestMove": function (callback) {
+                        "requestMove": function (game, callback) {
                             moveCallback = callback;
                         },
                         "name": wanted[1],
@@ -212,22 +212,8 @@
                 }
                 else if (wanted[0] == "ai") {
                     var playerType = wanted[2];
-                    players.push({
-                        "requestMove": function (callback) {
-                            // For now this is just picks the first open box.
-                            // FIXME: write some real AI code.
-                            for (var bi = 0; bi < 60; bi++) {
-                                if (! game.boxes[bi].open) {
-                                    setTimeout(function () {
-                                        callback(bi);
-                                    }, 1000);
-                                    break;
-                                }
-                            }
-                        },
-                        "name": playerType,
-                        "type": "ai",
-                    });
+                    var aiPlayer = AIPlayer("Mr Memory", ui, 1);
+                    players.push(aiPlayer);
                 }
             }
 
