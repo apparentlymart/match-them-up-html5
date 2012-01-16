@@ -4,6 +4,7 @@
     var $boxes;
     var $players;
     var game;
+    var ui;
     var moveCallback = null;
     var inARow = 0;
     var specialMatchMessages = {
@@ -16,8 +17,21 @@
         "Keep it up, #!",
         "You're on a roll, #!",
     ];
+    var wantedPlayers = [
+        ["ui", "Player 1", "memory"],
+        ["",   "Player 2", "memory"],
+        ["",   "Player 3", "memory"],
+        ["",   "Player 4", "memory"],
+    ];
 
-    $(document).ready(function() {
+    var initGame = function () {
+
+        $players = [];
+        $boxes = [];
+        game = null;
+        moveCallback = null;
+        inARow = 0;
+
         var $boxcontainer = $("#boxes");
 
         var setBoxTileImage = function (boxidx, tileidx) {
@@ -26,7 +40,6 @@
             $box.css("background-image", "url(data/tile"+tileidxstr+".png)");
         };
 
-        $boxes = [];
         for (var i = 0; i < 60; i++) {
             var $box = $("<div class='box'><div class='door'><div class='doorcaption'>?</div></div></div>");
             $boxes[i] = $box;
@@ -35,7 +48,7 @@
             $boxcontainer.append($box);
         }
 
-        var ui = {
+        ui = {
             openBox: function (idx, complete) {
                 var $box = $boxes[idx];
                 setBoxTileImage(idx, game.boxes[idx].tile);
@@ -114,18 +127,60 @@
                 }
             },
         };
-        players = [];
-        for (var i = 0; i < 4; i++) {
-            players.push({
-                "requestMove": function (callback) {
-                    moveCallback = callback;
-                },
-                "name": "Player " + (i + 1),
-                "type": "ui",
-            });
+
+    };
+
+    var initSetup = function () {
+
+        var $setupPanel = $("#setuppanel");
+        $setupPanel.find("table").html("");
+        var $table = $setupPanel.find("table");
+
+        for (var i = 0; i < wantedPlayers.length; i++) {
+            (function () {
+                var idx = i;
+                var type = wantedPlayers[idx][0];
+                var $row = $("<tr><td class='playertype'></td><td class='playername'></td></tr>");
+                var $playertype = $row.find(".playertype");
+                var $playername = $row.find(".playername");
+                var $typeselect = $("<select><option value='ui'>Human</option><option value='ai'>Computer</option><option value=''>None</option></select>");
+                $typeselect.val(type);
+                $playertype.append($typeselect);
+                $table.append($row);
+
+                $typeselect.bind("change", function (evt) {
+                    var type = $typeselect.val();
+                    $playername.html('');
+                    wantedPlayers[idx][0] = type;
+                    if (type == 'ui') {
+                        var playerName = wantedPlayers[idx][1];
+                        var $entry = $("<input type='text'>");
+                        $entry.val(playerName);
+                        $playername.append($entry);
+                        $entry.bind("change", function () {
+                            wantedPlayers[idx][1] = $entry.val();
+                        });
+                    }
+                    else if (type == 'ai') {
+                        var playerName = wantedPlayers[idx][2];
+                        var $entry = $("<select><option value='memory'>Mr Memory</option></select>");
+                        $entry.val(playerName);
+                        $playername.append($entry);
+                        $entry.bind("change", function () {
+                            wantedPlayers[idx][2] = $entry.val();
+                        });
+                    }
+                });
+
+                $typeselect.trigger("change");
+            })();
         }
 
-        $(".box").bind("click", function (elem) {
+    };
+
+    $(document).ready(function() {
+
+        $("#boxes").on("click", ".box", function (elem) {
             var $box = $(elem.currentTarget);
             var idx = $box[0]._box_idx;
 
@@ -138,10 +193,48 @@
             }
         });
 
-        // Start the game after waiting a second for the UI to settle.
-        setTimeout(function () {
-            MatchEmGame(players, ui);
-        }, 1000);
+        initGame();
+        initSetup();
+
+        $("#setuppanel button").bind("click", function () {
+
+            players = [];
+            for (var i = 0; i < 4; i++) {
+                var wanted = wantedPlayers[i];
+                if (wanted[0] == "ui") {
+                    players.push({
+                        "requestMove": function (callback) {
+                            moveCallback = callback;
+                        },
+                        "name": wanted[1],
+                        "type": "ui",
+                    });
+                }
+                else if (wanted[0] == "ai") {
+                    var playerType = wanted[2];
+                    players.push({
+                        "requestMove": function (callback) {
+                            // For now this is just picks the first open box.
+                            // FIXME: write some real AI code.
+                            for (var bi = 0; bi < 60; bi++) {
+                                if (! game.boxes[bi].open) {
+                                    setTimeout(function () {
+                                        callback(bi);
+                                    }, 1000);
+                                    break;
+                                }
+                            }
+                        },
+                        "name": playerType,
+                        "type": "ai",
+                    });
+                }
+            }
+
+            hideSetup(function () {
+                MatchEmGame(players, ui);
+            });
+        });
 
     });
 
@@ -234,6 +327,18 @@
         },
         {
             complete: realComplete,
+        });
+    }
+
+    function hideSetup(complete) {
+        $("#setup").fadeOut(600, function () {
+            $("#setupbg").fadeOut(600, complete);
+        });
+    }
+
+    function showSetup(complete) {
+        $("#setupbg").fadeIn(600, function () {
+            $("#setup").fadeIn(600, complete);
         });
     }
 

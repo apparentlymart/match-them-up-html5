@@ -37,6 +37,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
     cursor: default;
+    position: relative;
 }
 
 #title {
@@ -130,3 +131,37 @@ body {
     -transform-origin: 50% 50%;
 }
 
+#setupbg {
+    background: #7d1356;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 600px;
+}
+#setuptitle {
+    text-align: center;
+    font-family: "Concert One";
+    font-size: 80px;
+    color: #ffe401;
+}
+
+#setuppanel table {
+    width: 75%;
+    margin: auto;
+}
+#setuppanel table .playertype {
+    width: 25%;
+}
+#setuppanel table .playername {
+    width: 75%;
+}
+#setuppanel table .playertype * {
+    width: 100%;
+}
+#setuppanel table .playername * {
+    width: 100%;
+}
+#setuppanel p {
+    text-align: center;
+}
