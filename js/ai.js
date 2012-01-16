@@ -35,7 +35,7 @@ function AIPlayer(name, ui, memCoefficient) {
                 var ct = Object.keys(entry).length;
                 if (ct > 1) {
                     for (maybeboxidx in entry) {
-                        move = maybeboxidx;
+                        move = parseInt(maybeboxidx, 10);
                         if (! game.boxes[move].open) {
                             break;
                         }
@@ -53,6 +53,7 @@ function AIPlayer(name, ui, memCoefficient) {
             var opentile = game.boxes[openbox].tile;
             var entry = player.memory[opentile];
             for (maybeboxidx in entry) {
+                maybeboxidx = parseInt(maybeboxidx, 10);
                 if (maybeboxidx != openbox) {
                     move = maybeboxidx;
                     break;
@@ -70,6 +71,7 @@ function AIPlayer(name, ui, memCoefficient) {
             }
             for (maybetileidx in player.memory) {
                 for (maybeboxidx in player.memory[maybetileidx]) {
+                    maybeboxidx = parseInt(maybeboxidx, 10);
                     delete candidates[maybeboxidx];
                 }
             }
