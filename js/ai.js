@@ -112,9 +112,11 @@ function AIPlayer(name, ui, memCoefficient) {
         for (var i = 0; i < 30; i++) {
             var entries = memory[i];
             if (entries) {
-                for (intileidx in entries) {
-                    entries[intileidx]--;
-                    if (entries[intileidx] < 1) delete entries[intileidx];
+                for (inboxidx in entries) {
+                    entries[inboxidx]--;
+                    if (entries[inboxidx] < 1) {
+                        delete entries[inboxidx];
+                    }
                 }
             }
         }
@@ -132,7 +134,7 @@ function AIPlayer(name, ui, memCoefficient) {
         if (boxidx < 10) value += 1;
 
         value *= memCoefficient;
-
+        if (memory[tileidx][boxidx] == null) memory[tileidx][boxidx] = 0;
         memory[tileidx][boxidx] += value;
     };
 
