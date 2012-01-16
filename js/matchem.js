@@ -17,11 +17,18 @@
         "Keep it up, #!",
         "You're on a roll, #!",
     ];
+    var aiPlayers = [
+        ["Mr Forget", 1],
+        ["Mr Silly", 2],
+        ["Mr Reasonable", 3],
+        ["Mr Memory", 8],
+        ["Mr Impossible", 64],
+    ];
     var wantedPlayers = [
-        ["ui", "Player 1", "memory"],
-        ["",   "Player 2", "memory"],
-        ["",   "Player 3", "memory"],
-        ["",   "Player 4", "memory"],
+        ["ui", "Player 1", 2], // selected type, human name, ai player index
+        ["ai", "Player 2", 2],
+        ["",   "Player 3", 2],
+        ["",   "Player 4", 2],
     ];
 
     var initGame = function () {
@@ -174,12 +181,19 @@
                         });
                     }
                     else if (type == 'ai') {
-                        var playerName = wantedPlayers[idx][2];
-                        var $entry = $("<select><option value='memory'>Mr Memory</option></select>");
-                        $entry.val(playerName);
+                        var aiPlayerIdx = wantedPlayers[idx][2];
+                        var $entry = $("<select></select>");
+                        for (var aiPlayerChoiceIdx = 0; aiPlayerChoiceIdx < aiPlayers.length; aiPlayerChoiceIdx++) {
+                            var aiPlayerChoice = aiPlayers[aiPlayerChoiceIdx];
+                            var $option = $("<option></option>");
+                            $option.text(aiPlayerChoice[0]);
+                            $option.attr('value', aiPlayerChoiceIdx);
+                            $entry.append($option);
+                        }
+                        $entry.val(aiPlayerIdx);
                         $playername.append($entry);
                         $entry.bind("change", function () {
-                            wantedPlayers[idx][2] = $entry.val();
+                            wantedPlayers[idx][2] = parseInt($entry.val(), 10);
                         });
                     }
                 });
@@ -225,7 +239,9 @@
                 }
                 else if (wanted[0] == "ai") {
                     var playerType = wanted[2];
-                    var aiPlayer = AIPlayer("Mr Memory", ui, 1);
+                    var playerName = aiPlayers[playerType][0];
+                    var playerMemCoefficient = aiPlayers[playerType][1];
+                    var aiPlayer = AIPlayer(playerName, ui, playerMemCoefficient);
                     players.push(aiPlayer);
                 }
             }
