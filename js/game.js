@@ -50,6 +50,9 @@ function MatchEmGame(players, ui) {
         ui.openBox(idx, function () {
             game.openBoxes.push(idx);
             box.open = true;
+            for (var pi = 0; pi < players.length; pi++) {
+                players[pi].notifyBoxTile(idx, game.boxes[idx].tile);
+            }
 
             if (game.openBoxes.length == 2) {
                 // Determine if the player found a match.

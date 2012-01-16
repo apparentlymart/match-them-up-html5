@@ -218,6 +218,7 @@
                         "requestMove": function (game, callback) {
                             moveCallback = callback;
                         },
+                        "notifyBoxTile": function () {},
                         "name": wanted[1],
                         "type": "ui",
                     });
