@@ -19,8 +19,13 @@ function MatchEmGame(players, ui) {
             "open": false,
         };
     }
-    // FIXME: It would be better to use a real array shuffle here
-    boxes.sort(function () { Math.random()-0.5 });
+    // Shuffle the boxes list
+    for (var i = boxes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var old = boxes[i];
+        boxes[i] = boxes[j];
+        boxes[j] = old;
+    }
     game.boxes = boxes;
 
     var handleMove;
