@@ -26,8 +26,13 @@ function AIPlayer(name, ui, memCoefficient) {
                 if (ct > 1) {
                     for (maybeboxidx in entry) {
                         move = maybeboxidx;
-                        break;
+                        if (! game.boxes[move].open) {
+                            break;
+                        }
                     }
+                }
+                if (move != null) {
+                    break;
                 }
             }
         }
