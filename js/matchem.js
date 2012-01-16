@@ -3,6 +3,7 @@
 
     var $boxes = [];
     var game;
+    var moveCallback = null;
 
     $(document).ready(function() {
         var $boxcontainer = $("#boxes");
@@ -32,24 +33,24 @@
                 closeBoxes($box, complete);
             },
         };
-        var player1 = {};
+        var player1 = {
+            "requestMove": function (callback) {
+                moveCallback = callback;
+            },
+        };
 
         game = MatchEmGame([ player1 ], ui);
 
         $(".box").bind("click", function (elem) {
             var $box = $(elem.currentTarget);
             var idx = $box[0]._box_idx;
-            game.selectBox(player1, idx, function () {});
-            return;
 
-            for (var i = 0; i < 60; i++) {
-                (function ($box) {
-                    setTimeout(function () {
-                        openBoxes($box, function () {
-                            //closeBoxes($box);
-                        });
-                    }, (60 - i) * 10)
-                })($boxes[i]);
+            if (moveCallback) {
+                // Only an open box is selectable.
+                if (! game.boxes[idx].open) {
+                    moveCallback(idx);
+                    moveCallback = null;
+                }
             }
         });
 
@@ -99,7 +100,6 @@
             "complete": complete,
         });
     }
-
 
 })();
 

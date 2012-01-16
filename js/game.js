@@ -3,8 +3,8 @@ function MatchEmGame(players, ui) {
     var game = {};
 
     game.players = players;
-    game.currentPlayer = players[0];
-    game.doorsOpen = 0;
+    game.currentPlayer = -1;
+    game.openBoxes = [];
 
     // Populate the boxes with a flat list and then shuffle it.
     var boxes = [];
@@ -18,21 +18,58 @@ function MatchEmGame(players, ui) {
     boxes.sort(function () { Math.random()-0.5 });
     game.boxes = boxes;
 
-    game.selectBox = function (player, idx, complete) {
-        if (player == game.currentPlayer) {
-            box = game.boxes[idx];
-            if (box.open) {
-                game.doorsOpen--;
-                box.open = false;
-                ui.closeBox(idx, complete);
+    var handleMove;
+
+    game.nextPlayer = function () {
+        game.currentPlayer++;
+        if (game.currentPlayer >= game.players.length) {
+            game.currentPlayer = 0;
+        }
+        game.nextMove();
+    };
+    game.nextMove = function () {
+        game.players[game.currentPlayer].requestMove(handleMove);
+    }
+
+    handleMove = function (idx) {
+        var box = game.boxes[idx];
+
+        if (box.open) {
+            // It's not valid to select the same box again.
+            throw Error("Box " + idx + " is already open");
+        }
+
+        ui.openBox(idx, function () {
+            game.openBoxes.push(idx);
+            box.open = true;
+
+            if (game.openBoxes.length == 2) {
+                var closeComplete = function () {
+                    // this doesn't necessarily pop them in the
+                    // correct order but that's okay since we only
+                    // want to keep track of the count.
+                    game.openBoxes.pop();
+                    if (game.openBoxes.length == 0) {
+                        game.nextPlayer();
+                    }
+                };
+                setTimeout(function () {
+                    for (var i = 0; i < game.openBoxes.length; i++) {
+                        var idx = game.openBoxes[i];
+                        game.boxes[idx].open = false;
+                        ui.closeBox(idx, closeComplete);
+                    }
+                }, 1000);
             }
             else {
-                game.doorsOpen++;
-                box.open = true;
-                ui.openBox(idx, complete);
+                game.nextMove();
             }
-        }
+
+        });
     };
+
+    // Begin the game by selecting the next (i.e. first) player
+    game.nextPlayer();
 
     return game;
 }
