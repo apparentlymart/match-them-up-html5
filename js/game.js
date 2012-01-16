@@ -3,8 +3,12 @@ function MatchEmGame(players, ui) {
     var game = {};
 
     game.players = players;
-    game.currentPlayer = -1;
+    game.currentPlayer = 0;
     game.openBoxes = [];
+
+    for (var i = 0; i < players.length; i++) {
+        players[i].score = 0;
+    }
 
     // Populate the boxes with a flat list and then shuffle it.
     var boxes = [];
@@ -25,6 +29,7 @@ function MatchEmGame(players, ui) {
         if (game.currentPlayer >= game.players.length) {
             game.currentPlayer = 0;
         }
+        ui.updatePlayerMarker();
         game.nextMove();
     };
     game.nextMove = function () {
@@ -68,8 +73,11 @@ function MatchEmGame(players, ui) {
         });
     };
 
-    // Begin the game by selecting the next (i.e. first) player
-    game.nextPlayer();
+    ui.init(game);
+    ui.updatePlayerMarker();
+
+    // Begin the game by starting a turn.
+    game.nextMove();
 
     return game;
 }

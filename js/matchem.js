@@ -1,7 +1,8 @@
 
 (function () {
 
-    var $boxes = [];
+    var $boxes;
+    var $players;
     var game;
     var moveCallback = null;
 
@@ -14,6 +15,7 @@
             $box.css("background-image", "url(data/tile"+tileidxstr+".png)");
         };
 
+        $boxes = [];
         for (var i = 0; i < 60; i++) {
             var $box = $("<div class='box'><div class='door'><div class='doorcaption'>?</div></div></div>");
             $boxes[i] = $box;
@@ -32,14 +34,41 @@
                 var $box = $boxes[idx];
                 closeBoxes($box, complete);
             },
-        };
-        var player1 = {
-            "requestMove": function (callback) {
-                moveCallback = callback;
+            init: function (newGame) {
+                game = newGame;
+                var $scoreboard = $("#scoreboard");
+                $scoreboard.html("<table></table>");
+                $scoreboardTable = $scoreboard.find("table");
+                $players = [];
+
+                for (var i = 0; i < game.players.length; i++) {
+                    var player = game.players[i];
+                    var name = player.name;
+                    var score = player.score;
+                    var $player = $("<tr><td class='marker'></td><td class='name'></td><td class='score'></td></tr>");
+                    $player.find(".name").text(name);
+                    $player.find(".score").text(score);
+                    $scoreboardTable.append($player);
+                    $players[i] = $player;
+                }
+            },
+            updatePlayerMarker: function () {
+                for (var i = 0; i < game.players.length; i++) {
+                    var $player = $players[i];
+                    var marker = (game.currentPlayer == i) ? "&#10148;" : "";
+                    $player.find(".marker").html(marker);
+                }
             },
         };
-
-        game = MatchEmGame([ player1 ], ui);
+        players = [];
+        for (var i = 0; i < 4; i++) {
+            players.push({
+                "requestMove": function (callback) {
+                    moveCallback = callback;
+                },
+                "name": "Player " + (i + 1),
+            });
+        }
 
         $(".box").bind("click", function (elem) {
             var $box = $(elem.currentTarget);
@@ -53,6 +82,9 @@
                 }
             }
         });
+
+        // Start the game
+        MatchEmGame(players, ui);
 
     });
 

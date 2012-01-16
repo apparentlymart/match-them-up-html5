@@ -39,6 +39,40 @@ body {
     cursor: default;
 }
 
+#title {
+    font-family: "Concert One";
+    font-size: 40px;
+    color: #ffe401;
+    float: left;
+    margin: 5px;
+    text-align: center;
+    width: 308px;
+    margin-top: 12px;
+}
+#scoreboard {
+    height: 74px;
+    background: #000000;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    width: 308px;
+    margin: 5px 5px 5px auto;
+    color: #ffffff;
+}
+#scoreboard table {
+    width: 100%;
+}
+#scoreboard td {
+    color: #ffffff;
+    font-size: 12px;
+}
+#scoreboard .marker {
+    width: 12px;
+}
+#scoreboard .score {
+    text-align: right;
+    width: 25px;
+}
+
 .box {
     overflow: hidden;
     width: 52px;
@@ -66,14 +100,10 @@ body {
     text-align: center;
     width: 52px;
     height: 62px;
+    border-radius: 4px;
 }
 .doorcaption {
     -webkit-transform-origin: 50% 50%;
     -transform-origin: 50% 50%;
 }
 
-#title {
-    font-family: "Concert One";
-    font-size: 48px;
-    color: #ffe401;
-}
