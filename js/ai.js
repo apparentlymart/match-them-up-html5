@@ -45,6 +45,25 @@ function AIPlayer(name, ui, memCoefficient) {
             }
         }
 
+        // If we've not picked anything yet then try to
+        // prefer a box we don't know anything about
+        // in order to learn more about the board.
+        if (move == null || game.boxes[move].open) {
+            var candidates = {};
+            for (var maybeboxidx = 0; maybeboxidx < 30; maybeboxidx++) {
+                candidates[maybeboxidx] = true;
+            }
+            for (maybetileidx in player.memory) {
+                for (maybeboxidx in player.memory[maybetileidx]) {
+                    delete candidates[maybeboxidx];
+                }
+            }
+            // Turn it into a list so we can easily seek into it.
+            candidates = Object.keys(candidates);
+            var candidx = Math.floor(Math.random() * candidates.length);
+            move = candidates[candidx];
+        }
+
         // If we've not picked anything yet then just
         // pick something at random.
         while (move == null || game.boxes[move].open) {
